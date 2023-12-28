@@ -1,26 +1,55 @@
-# softplat-back
-Repository of the backend part of SoftPlat2048
-## Описание 
-Бекэнд сервиса-площадки по продаже лиценционного ПО.
+#### Project Softplat
+This is a project started at Yandex Accelerator by a full team of IT professionals, including project managers, UI/UX designers, frontend, backend, QA and system analysts. We completed the MVP stage during 4Q 2023 at Yandex Accelerator and plan to further develop our platform.
+___
 
-RESTful API имеет многомодульную архитектуру: 
-основной модуль с главной частью бизнес-логики, модуль сервиса статистики (хранит данные по продажам), модуль security (отвечает за работу с персональными данными пользователей).
-Приложение имеет домен, по которому можно обращаться с запросами "http://softplat.ru". 
+#### Links 
+* Project website link (currently in Russian only): https://softplat.ru
+* Project repository: https://github.com/software-sales-and-installations/softplat-back
+* Swagger API documentation: https://api.softplat.ru/swagger-ui/#/
+___
 
-## ER diagram
-Security:
+#### Project description
+* Softplat is a marketplace platform for software sales and installation, which connects sellers of software, allowing them to distribute their products, and buyers, who can browse for products through catalogue, select their favourites and make purchases; 
+* Backend functionality completed during two months at Yandex Accelerator (MVP): 
+    * Three access roles to the system by admin, sellers and buyers, which allows different users to register on platform, create personal accounts and perform different actions based on their roles; 
+    * Sellers can create their accounts, upload their products to the platform and market them to the buyers; 
+    * Buyers can create their accounts, search and filter products through catalogue, add products to their favourites lists or shopping carts and perform purchases; 
+    * Admin can add vendors to the platform, moderate products, send products for update to sellers and delete products from platform in case of complaints; 
+    * Backend supports storage of uploaded images by users, such as images of products, sellers and vendors;
+    * When purchasing products buyers can comment them and submit complaints, which are sent to sellers and admin for moderation; 
+    * Sellers and admin are able to get sales reports (in browser and download in CSV) to monitor their sales volumes and profit for selected periods of time; 
+___
+
+#### Technological stack used for backend
+* Backend is written in **Java 11** and **Spring Boot**, and implements microservices architecture, which allows to quickly scale project and reuse common parts/modules to avoid copy-paste. Project consists of three modules: 
+    * Security – performs gateway functions and check users access roles;
+    * Main – contains implementation of the core business logic;
+    * Stats – responsible for getting statistics and sales reports for sellers and admin; 
+* **PostgreSQL** is used as database to store information, each module has a separate database; 
+* **Spring Data JPA** and **Hibernate** are used for managing SQL quires to the database, as well as library **QueryDSL** to create complex quires using predicates and boolean expressions (extensively used for product search and filtering service in catalogue); 
+* **Spring Security** is used to separate users by three main roles (admin/sellers/buyers) and provide authorisation based on JWT tokens issued for limited time to users; 
+* **Spring MVC** is used to create REST API endpoints providing access for frontend to out backend application; 
+* Database model entities are build using **Lombok** (constructors/getters/setters), **Mapstruct** was used for entity-DTO mapping when transferring objects between database and client;  
+* The backend project code is tested by unit and integrational tests (**JUnit 5** and **Mockito**), currently the test code coverage ratio is 70% (we plan to increase it at least to 85%). 
+* API documentation is generated automatically using integration with **Swagger** using **SpringFox** library; 
+* Full project (both backend and frontend) is deployed on server and available at https://softplat.ru 
+___
+
+#### ER diagram
+**Security**:
+
 ![SCHEME](https://github.com/software-sales-and-installations/softplat-back/blob/dev-microservices/er-diagram-db/softplat-security.jpg)
 
-----
-Main:
+**Main**:
+
 ![SCHEME](https://github.com/software-sales-and-installations/softplat-back/blob/dev-microservices/er-diagram-db/softplat-main.jpg)
 
-----
-Stats:
+**Stats**:
+
 ![SCHEME](https://github.com/software-sales-and-installations/softplat-back/blob/dev-microservices/er-diagram-db/softplat-stats.jpg)
 
 ----
-## Пример взаимодействия с БД
+#### Example of SQL query
 ```
 @Query("SELECT new ru.softplat.stats.server.dto.SellerReportEntry( " +
             "s.product.name, sum (s.quantity), sum(s.amount)) " +
@@ -33,54 +62,40 @@ Stats:
 ```
 ----
 
-## Примеры взаимодействия с приложением
-Далее будут представлены варианты запросов для 
-всех ролей, представленных в системе.
+#### Examples of HTTP requests to REST API
+Below are examples of requests for all user roles in our application.
 
-Admin:
-- Удаление комментария к продукту админом: DELETE "http://api.softplat.ru/comment/{commentId}"
+**Admin:**
+- Deleting a product comment by an admin:
 
-Seller:
-- Создание карточки товара: POST "http://api.softplat.ru/product"
+  ```DELETE "https://api.softplat.ru/comment/{commentId}"```
 
-Buyer:
-Добавление продукта в свою корзину: POST "http://api.softplat.ru/basket/{productId}"
+**Seller:**
+- Creating a new product by seller:
 
-Public:
-- Регистрация нового пользователя: POST "http://api.softplat.ru/registration"
-- Получение списка продуктов/поиск/фильтрация: GET "http://api.softplat.ru/product/search?minId=0&pageSize=10&sort=NEWEST"
+  ```POST "https://api.softplat.ru/product"```
 
-## Стек
-- Java SE 11
-- Spring Boot
-- Spring Security
-- Spring Data JPA
-- Spring Mail
-- PostgreSQL 
-- H2
-- Hibernate
-- Query DSL
-- Mapstruct
-- Lombok
-- Swagger
-- JUnit 5
-- Mockito
+**Buyer:**
+- Adding a product to the shopping cart by buyer:
 
-### Документация Swagger
-After starting application:
-- http://api.softplat.ru/swagger-ui/#/
+  ```POST "https://api.softplat.ru/basket/{productId}"```
 
-### Commit rules
-- ```feat```: for new feature additions.
-- ```fix```: for fixing bugs or issues.
-- ```docs```: for documentation changes or updates. 
-- ```style```: for code style and formatting changes. 
-- ```refactor```: for code refactoring without changing functionality. 
-- ```test```: for adding or modifying tests. 
-- ```chore```: for maintenance tasks and general housekeeping. 
-- ```perf```: for performance improvements.
+**Public:**
+- New user registration:
 
-### Examples of good commits
-- ```feat```: Add user registration functionality
-- ```fix```: Resolve issue with login validation
-- ```docs```: Update README with installation instructions
+  ```POST "https://api.softplat.ru/registration"```
+
+- Product search and filtering based on a set of parameters:
+
+  ```GET "https://api.softplat.ru/product/search?minId=0&pageSize=10&sort=NEWEST"```
+___
+
+#### Plans for future development
+By the end of December 2023 our team has successfully completed the MVP stage and looks forward to continuing development of the product by adding new features to it: 
+1. Integrate payments into the platform to perform transactions b/w buyers and sellers; 
+2. Provide solution for users to upload and download software from the platform; 
+3. Implement storing of software licence keys for distributing them to buyers; 
+4. Fully automate CI/CD process of deploying our application on server using Docker; 
+5. Increase our test coverage and include more complex test scenarios; 
+6. Add indices and search keys to our databases to increase speed of SQL queries execution; 
+7. Integrate message brokers (Kafka or RabbitMQ) to increase speed of communication between microservices and modules.
