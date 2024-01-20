@@ -3,9 +3,9 @@ This is a project started at Yandex Accelerator by a full team of IT professiona
 ___
 
 #### Links 
-* Project website link (currently in Russian only): https://softplat.ru
+* Project website link (currently in Russian only): https://softplat24.ru
 * Project repository: https://github.com/software-sales-and-installations/softplat-back
-* Swagger API documentation: https://api.softplat.ru/swagger-ui/#/
+* Swagger API documentation: https://api.softplat24.ru/swagger-ui/#/
 ___
 
 #### Project description
